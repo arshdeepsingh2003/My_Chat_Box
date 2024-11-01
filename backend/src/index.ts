@@ -1,10 +1,11 @@
-import express from "express";
-import {config} from "dotenv";
-config();
-const app=express();
+import app from "./app.js";
+import { connectToDatabase } from "./db/connection.js";
 
-//middlewares
-app.use(express.json); 
+const PORT=process.env.PORT||5000;
+connectToDatabase().then(()=>{
+  app.listen(PORT,()=>console.log("server open and contected to Database"));
 
-//connctions and listeners
-app.listen(5000,()=>console.log("server open"));
+})
+.catch((err)=>console.log(err));
+
+
