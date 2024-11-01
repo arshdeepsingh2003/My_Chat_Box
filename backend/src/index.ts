@@ -1,3 +1,10 @@
-console.log(
-  "This is a chatbox project. With 💓 By Arshdeep"
-);
+import express from "express";
+import {config} from "dotenv";
+config();
+const app=express();
+
+//middlewares
+app.use(express.json); 
+
+//connctions and listeners
+app.listen(5000,()=>console.log("server open"));
