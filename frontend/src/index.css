@@ -4,7 +4,11 @@
 html,body{
   margin: 0;
   padding:0;
-  background-color: #05101c;
+  background-color: black;
   color: white;
   font-family: "Roboto Slab",serif;
+}
+
+.image-iverted{
+  filter: inverted(100%);
 }
