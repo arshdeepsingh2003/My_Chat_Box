@@ -60,40 +60,69 @@ export const userSignup=async(
     }
 }
 
-export const userLogin=async(
+export const userLogin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ email });
+  
+      if (!user) {
+        return res.status(401).send("User Not Registered");
+      }
+  
+      const isPasswordCorrect = await compare(password, user.password);
+      if (!isPasswordCorrect) {
+        return res.status(401).send("Incorrect Password");
+      }
+  
+      res.clearCookie(COOKIE_NAME, {
+        domain: "localhost",
+        httpOnly: true,
+        signed: true,
+        path: "/",
+      });
+  
+      const token = createToken(user._id.toString(), user.email, "7d");
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 7);
+  
+      res.cookie(COOKIE_NAME, token, {
+        path: "/",
+        domain: "localhost",
+        expires,
+        httpOnly: true,
+        signed: true,
+      });
+  
+      return res.status(200).json({ message: "OK", name: user.name, email: user.email });
+    } catch (error) {
+      console.error('Error during login:', error); // Add detailed error logs
+      return res.status(500).json({ message: "ERROR", cause: error.message });
+    }
+  };
+  
+
+export const verifyUser=async(
     req:Request,
     res:Response,
     next:NextFunction
 )=>{
     try {
-        //login
-        const {email,password}=req.body;
-        const user=await User.findOne({email});
+      
+        const user = await User.findById(res.locals.jwtData.id);
+
         if(!user){
-            return res.status(401).send("User Not Registered");
-        }
-        const isPasswordCorrect= await compare(password,user.password);
-        if(!isPasswordCorrect){
-            return res.status(401).send("Incorrect Password");
+            return res.status(401).send("User Not Registered or token malfunction");
         }
 
-        res.clearCookie(COOKIE_NAME,{
-            domain:"localhost",
-            httpOnly:true,
-            signed:true,
-            path:"/",
-
-        });
-        const token=createToken(user._id.toString(),user.email,"7d");
-        const expires=new Date();
-        expires.setDate(expires.getDate()+7);
-        res.cookie(COOKIE_NAME,token,{
-            path:"/",
-            domain:"localhost",
-            expires,
-            httpOnly:true,
-            signed:true
-        });
+        if(user._id.toString() !== res.locals.jwtData.id){
+            return res.status(401).send("Permission didn't match");
+        }
+        
+        
 
         return res.status(201).json({message:"OK",name:user.name,email:user.email});
     } catch (error) {

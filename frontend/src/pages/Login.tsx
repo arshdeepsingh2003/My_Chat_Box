@@ -14,17 +14,16 @@ export default function Login() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    
     try {
-      toast.loading("Signing In...", { id: "login" });
-      await auth.login(email, password);
-      toast.dismiss("login");
-      toast.success("Signed In Successfully", { id: "login" });
+      toast.loading("Signing In",{id:"login"});
+      await auth?.login(email,password);
+      toast.success("Signined in Successfully",{id:"login"});
     } catch (error) {
-      toast.dismiss("login");
-      console.error("Error during login submission:", error);
-      toast.error(error instanceof Error ? error.message : "Signing In Failed", { id: "login" });
+      console.log(error);
+      toast.success("Signined in Failed",{id:"login"});
+      
     }
+    
   };
   
 
