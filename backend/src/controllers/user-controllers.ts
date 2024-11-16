@@ -111,7 +111,7 @@ export const verifyUser=async(
     next:NextFunction
 )=>{
     try {
-      
+      //user token check
         const user = await User.findById(res.locals.jwtData.id);
 
         if(!user){

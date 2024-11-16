@@ -22,10 +22,22 @@ export const loginUser = async (email: string, password: string) => {
 };
 
 export const checkAuthStatus = async () => {
-    const res = await axios.get("user/auth-status"); // Ensure this path is correct
-    if(res.status !==200){
-      throw new Error("Unable to authenticate")
+  try {
+    const res = await axios.get("/user/auth-status");
+    
+    if (res.status === 200 && res.data) {
+      return res.data; 
+    } else {
+      console.error("Unexpected status code:", res.status);
+      throw new Error("Unable to authenticate. Please log in again.");
     }
-    const data=await res.data;
-    return data;
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      console.error("API error response:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Authentication failed. Please log in again.");
+    } else {
+      console.error("Unexpected error:", error);
+      throw new Error("An unexpected error occurred while checking authentication status");
+    }
+  }
 };
