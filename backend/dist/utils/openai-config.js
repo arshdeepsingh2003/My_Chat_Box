@@ -4,5 +4,6 @@ export const configureOpenAI = () => {
         apiKey: process.env.OPEN_AI_SECRET,
         organization: process.env.OPENAI_ORANISATION_ID
     });
+    return config;
 };
 //# sourceMappingURL=openai-config.js.map
